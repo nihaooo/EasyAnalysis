@@ -1,5 +1,6 @@
 package com.easyanalysis.android;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private List<CostBean> mCostBeanList;
+    private DatabaseHelper mDatabaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,10 +26,15 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
+        mDatabaseHelper = new DatabaseHelper(this);
         mCostBeanList = new ArrayList<>();
         ListView costList = (ListView) findViewById(R.id.lv_main);
         initCostData();
         costList.setAdapter(new CostListAdapter(this,mCostBeanList));
+
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -40,14 +47,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initCostData() {
+        mDatabaseHelper.deleteAllData();
         for (int i =0; i < 6;i++) {
             CostBean costBean = new CostBean();
-            costBean.costTitle = "mock";
+            costBean.costTitle = i +"mock" ;
             costBean.costDate = "11-11";
             costBean.costMoney = "20";
-            mCostBeanList.add(costBean);
+//            mCostBeanList.add(costBean);
+            mDatabaseHelper.insertCost(costBean);
         }
-
+        Cursor cursor = mDatabaseHelper.getAllCostData();
+        if (cursor  != null) {
+            while(cursor.moveToFirst()) {
+                CostBean costBean = new CostBean();
+                costBean.costTitle = cursor.getString(cursor.getColumnIndex("cost_title"));
+                costBean.costDate = cursor.getString(cursor.getColumnIndex("cost_date"));
+                costBean.costMoney = cursor.getString(cursor.getColumnIndex("cost_money"));
+                mCostBeanList.add(costBean);
+            }
+            cursor.close();
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.easyanalysis.android;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +104,10 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_chart) {
+            Intent intent = new Intent(MainActivity.this,ChartActivity.class);
+            intent.putExtra("cost_list", (Serializable) mCostBeanList);//传递数据
+            startActivity(intent);
             return true;
         }
 

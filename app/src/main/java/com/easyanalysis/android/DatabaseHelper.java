@@ -18,7 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table if not exists easyanalysis(" +
+        db.execSQL("create table if not exists analysis_cost(" +
         "id integer primary key, " +
         "cost_title varchar, " +
         "cost_date varchar, " +
@@ -30,16 +30,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("cost_title",costBean.costTitle);
         cv.put("cost_date",costBean.costDate);
         cv.put("cost_money",costBean.costMoney);
-        database.insert("easyanalysis",null,cv);
+        database.insert("analysis_cost",null,cv);
     }
     public Cursor getAllCostData(){
         SQLiteDatabase database = getWritableDatabase();
-        return database.query("easyanalysis",null,null,null,null,null,"cost_date " + "ASC");
+        return database.query("analysis_cost",null,null,null,null,null,"cost_date " + "ASC");
     }
 
     public void deleteAllData() {
         SQLiteDatabase database = getWritableDatabase();
-        database.delete("easyanalysis",null,null);
+        database.delete("analysis_cost",null,null);
 
     }
     @Override

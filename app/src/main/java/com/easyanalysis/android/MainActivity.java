@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<CostBean> mCostBeanList;
     private DatabaseHelper mDatabaseHelper;
-    private CostListAdapter adapter;
+    private CostListAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
         mCostBeanList = new ArrayList<>();
         ListView costList = (ListView) findViewById(R.id.lv_main);
         initCostData();
-        adapter = new CostListAdapter(this, mCostBeanList);
-        costList.setAdapter(adapter);
+        mAdapter = new CostListAdapter(this, mCostBeanList);
+        costList.setAdapter(mAdapter);
+
 
 
 
@@ -47,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-                View viewDialog = inflater.inflate(R.layout.new_cost_data,null);
+                LayoutInflater inflate = LayoutInflater.from(MainActivity.this);
+                View viewDialog = inflate.inflate(R.layout.new_cost_data,null);
                 final EditText title = (EditText) viewDialog.findViewById(R.id.et_cost_title);
                 final EditText money = (EditText) viewDialog.findViewById(R.id.et_cost_money);
                 final DatePicker date = (DatePicker) viewDialog.findViewById(R.id.dp_cost_date);
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         costBean.costDate = date.getYear() + "-" + (date.getMonth()+1) + "-" +date.getDayOfMonth();
                         mDatabaseHelper.insertCost(costBean);
                         mCostBeanList.add(costBean);
-                        adapter.notifyDataSetChanged();
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
                 builder.setNegativeButton("Cancel",null);
@@ -73,18 +74,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initCostData() {
-        mDatabaseHelper.deleteAllData();
-//        for (int i =0; i < 6;i++) {
-//            CostBean costBean = new CostBean();
-//            costBean.costTitle = i +"mock" ;
-//            costBean.costDate = "11-11";
-//            costBean.costMoney = "20";
-////            mCostBeanList.add(costBean);
-//            mDatabaseHelper.insertCost(costBean);
-//        }
         Cursor cursor = mDatabaseHelper.getAllCostData();
         if (cursor  != null) {
-            while(cursor.moveToFirst()) {
+            while(cursor.moveToNext()) {
                 CostBean costBean = new CostBean();
                 costBean.costTitle = cursor.getString(cursor.getColumnIndex("cost_title"));
                 costBean.costDate = cursor.getString(cursor.getColumnIndex("cost_date"));

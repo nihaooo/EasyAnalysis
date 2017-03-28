@@ -8,13 +8,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private List<CostBean> mCostBeanList;
     private DatabaseHelper mDatabaseHelper;
     private CostListAdapter mAdapter;
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         initCostData();
         mAdapter = new CostListAdapter(this, mCostBeanList);
         costList.setAdapter(mAdapter);
+
 
 
 
@@ -71,6 +76,40 @@ public class MainActivity extends AppCompatActivity {
                 });
                 builder.setNegativeButton("Cancel",null);
                 builder.create().show();
+            }
+        });
+
+
+        costList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                //定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage("确认删除");
+                builder.setTitle("提示");
+                //添加AlertDialog.Builder对象的setPositiveButton()方法
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (mCostBeanList.remove(position)!=null) {
+                            Log.d(TAG, "success");
+                        }else {
+                            Log.d(TAG, "failed");
+                        }
+                        Toast.makeText(MainActivity.this, "删除列表项", Toast.LENGTH_SHORT).show();
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+                //添加AlertDialog.Builder对象的setNegativeButton()方法
+
+                //                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                //                    @Override
+                //                    public void onClick(DialogInterface dialog, int which) {
+                //                    }
+                //                });
+                builder.setNegativeButton("取消",null);
+                builder.create().show();
+                return false;
             }
         });
     }

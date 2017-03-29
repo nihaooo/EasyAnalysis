@@ -32,6 +32,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("cost_money",costBean.costMoney);
         database.insert("analysis_cost",null,cv);
     }
+
+    public void deleteCost(int itemId) {
+        SQLiteDatabase database = getWritableDatabase();
+        String[] args = {String.valueOf(itemId)};
+        database.delete("analysis_cost","id=?",args);
+        database.close();
+    }
     public Cursor getAllCostData(){
         SQLiteDatabase database = getWritableDatabase();
         return database.query("analysis_cost",null,null,null,null,null,"cost_date " + "ASC");

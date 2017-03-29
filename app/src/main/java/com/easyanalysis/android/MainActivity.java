@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
                         costBean.costTitle = title.getText().toString();
                         costBean.costMoney = money.getText().toString();
                         costBean.costDate = date.getYear() + "-" + (date.getMonth()+1) + "-" +date.getDayOfMonth();
-                        mDatabaseHelper.insertCost(costBean);
-                        mCostBeanList.add(costBean);
+                        mDatabaseHelper.insertCost(costBean);//对数据库进行的操作
+                        mCostBeanList.add(costBean);//对list进行的操作
                         mAdapter.notifyDataSetChanged();
                     }
                 });
@@ -82,9 +82,16 @@ public class MainActivity extends AppCompatActivity {
 
         costList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            /*
+            public void onItemClick(AdapterView< > arg0, View arg1, int position,long arg3)
+                各项的意义：arg1是当前item的view，通过它可以获得该项中的各个组件。
+                    例如arg1.textview.settext("asd");
+                                    arg2是当前item的ID。这个id根据你在适配器中的写法可以自己定义。
+                                    arg3是当前的item在listView中的相对位置！
+             */
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, final long id) {
                 //定义AlertDialog.Builder对象，当长按列表项的时候弹出确认删除对话框
-                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage("确认删除");
                 builder.setTitle("提示");
                 //添加AlertDialog.Builder对象的setPositiveButton()方法
@@ -92,21 +99,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (mCostBeanList.remove(position)!=null) {
+                            //从数据库中删除
+                            CostBean costbean = (CostBean) mAdapter.getItem(position);
+                            int id = costbean.costid;
+                            mDatabaseHelper.deleteCost(id);
+
                             Log.d(TAG, "success");
                         }else {
                             Log.d(TAG, "failed");
                         }
+//                        mAdapter = new CostListAdapter(MainActivity.this, mCostBeanList);
                         Toast.makeText(MainActivity.this, "删除列表项", Toast.LENGTH_SHORT).show();
                         mAdapter.notifyDataSetChanged();
                     }
                 });
-                //添加AlertDialog.Builder对象的setNegativeButton()方法
-
-                //                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                //                    @Override
-                //                    public void onClick(DialogInterface dialog, int which) {
-                //                    }
-                //                });
                 builder.setNegativeButton("取消",null);
                 builder.create().show();
                 return false;
@@ -122,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 costBean.costTitle = cursor.getString(cursor.getColumnIndex("cost_title"));
                 costBean.costDate = cursor.getString(cursor.getColumnIndex("cost_date"));
                 costBean.costMoney = cursor.getString(cursor.getColumnIndex("cost_money"));
+                costBean.costid = cursor.getInt(cursor.getColumnIndex("id"));
                 mCostBeanList.add(costBean);
             }
             cursor.close();

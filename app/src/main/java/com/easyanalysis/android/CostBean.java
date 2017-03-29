@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class CostBean implements Serializable{
+    public int costid;
     public String costTitle;
     public String costDate;
     public String costMoney;
